@@ -1,21 +1,31 @@
 package com.narxoz.rpg.vault;
 
-import com.narxoz.rpg.combatant.Hero;
-import java.util.List;
+import com.narxoz.rpg.artifact.*;
+import com.narxoz.rpg.combatant.*;
+import com.narxoz.rpg.memento.Caretaker;
 
-/**
- * Orchestrates the Chronomancer's Vault demo run.
- */
 public class ChronomancerEngine {
 
-    /**
-     * Runs the vault sequence for the supplied party.
-     *
-     * @param party the heroes entering the vault
-     * @return a placeholder result in the scaffold
-     */
-    public VaultRunResult runVault(List<Hero> party) {
-        // TODO: wire together mementos, visitors, and the vault sequence.
-        return new VaultRunResult(0, 0, 0);
+    public void startAppraisalRun(Hero hero, Inventory inventory) {
+        Caretaker caretaker = new Caretaker();
+
+        caretaker.setMemento(hero.save());
+
+        System.out.println("Начало осмотра в Хранилище. " + hero);
+
+        ArtifactVisitor appraiser = new AppraisalVisitor();
+        inventory.acceptAll(appraiser);
+
+        System.out.println("\n--- Ой! Вы активировали ловушку Храма Времени! ---");
+        hero.applyPenalty(90, 200);
+        System.out.println("Состояние после ловушки: " + hero);
+
+        System.out.println("\nАктивация перемотки времени...");
+        hero.restore(caretaker.getMemento());
+
+        VaultRunResult result = new VaultRunResult("Успешно восстановлено");
+        result.printResult();
+
+        System.out.println("Финальное состояние героя: " + hero);
     }
 }
